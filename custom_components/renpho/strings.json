@@ -1,0 +1,92 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connect to Renpho",
+        "description": "Enter your Renpho account email and password to connect your smart scale.",
+        "data": {
+          "email": "Email",
+          "password": "Password",
+          "scan_interval": "Refresh interval (minutes)"
+        }
+      }
+    },
+    "error": {
+      "invalid_auth": "Invalid email or password.",
+      "cannot_connect": "Failed to connect to the Renpho cloud servers.",
+      "unknown": "Unexpected error occurred. Please check logs."
+    },
+    "abort": {
+      "already_configured": "This Renpho account is already configured."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Renpho Options",
+        "description": "Configure refresh interval and optional extra user accounts.",
+        "data": {
+          "scan_interval": "Refresh interval (minutes)",
+          "extra_user_ids": "Extra User IDs (comma-separated, optional)"
+        }
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "weight": {
+        "name": "Weight"
+      },
+      "bmi": {
+        "name": "BMI"
+      },
+      "bodyfat": {
+        "name": "Body fat"
+      },
+      "water": {
+        "name": "Body water"
+      },
+      "muscle": {
+        "name": "Muscle mass"
+      },
+      "bone": {
+        "name": "Bone mass"
+      },
+      "bmr": {
+        "name": "Basal metabolic rate"
+      },
+      "visfat": {
+        "name": "Visceral fat"
+      },
+      "subfat": {
+        "name": "Subcutaneous fat"
+      },
+      "protein": {
+        "name": "Protein"
+      },
+      "bodyage": {
+        "name": "Body age"
+      },
+      "sinew": {
+        "name": "Lean body mass"
+      },
+      "fat_free_weight": {
+        "name": "Fat-free weight"
+      },
+      "heart_rate": {
+        "name": "Heart rate"
+      },
+      "cardiac_index": {
+        "name": "Cardiac index"
+      },
+      "last_measurement": {
+        "name": "Last measurement"
+      }
+    },
+    "button": {
+      "refresh": {
+        "name": "Refresh"
+      }
+    }
+  }
+}

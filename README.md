@@ -1,60 +1,117 @@
-# Notice
+# Renpho Smart Scale Home Assistant Integration
 
-The component and platforms in this repository are not meant to be used by a
-user, but as a "blueprint" that custom component developers can build
-upon, to make more awesome stuff.
+[![HACS Custom](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/hacs/default)
+[![Validate](https://github.com/jollyjoyce1995/home-assistant-renpho/actions/workflows/validate.yml/badge.svg)](https://github.com/jollyjoyce1995/home-assistant-renpho/actions/workflows/validate.yml)
 
-HAVE FUN! 😎
+A custom Home Assistant integration for **Renpho smart scales**, powered by the [`renpho-api`](https://github.com/danvaneijck/renpho-api) library.
 
-## Why?
+Integrate your Renpho weight and body composition metrics directly into Home Assistant with automatic periodic polling and instant manual refresh.
 
-This is simple, by having custom_components look (README + structure) the same
-it is easier for developers to help each other and for users to start using them.
+---
 
-If you are a developer and you want to add things to this "blueprint" that you think more
-developers will have use for, please open a PR to add it :)
+## Features
 
-## What?
+- ⚖️ **Full Body Composition Metrics**:
+  - **Weight** (auto-converts to `kg`, `lbs`, or `st` based on your Home Assistant unit system)
+  - **BMI**
+  - **Body Fat Percentage**
+  - **Body Water Percentage**
+  - **Muscle Mass Percentage**
+  - **Bone Mass Percentage**
+  - **Basal Metabolic Rate (BMR)**
+  - **Visceral Fat Level**
+  - **Subcutaneous Fat Percentage**
+  - **Protein Percentage**
+  - **Metabolic / Body Age**
+  - **Lean Body Mass (Sinew)**
+  - **Fat-Free Weight**
+  - **Heart Rate** & **Cardiac Index** (for supported scale models)
+  - **Last Measurement Timestamp**
+- 🔄 **Manual Refresh Button**: Trigger an immediate data poll with a dedicated button entity (`button.renpho_*_refresh`).
+- ⚙️ **Configurable Polling Interval**: Configure the refresh rate (in minutes) during setup or adjust it anytime in the integration's Options dialog.
+- 👥 **Multi-Account Support**: Add `extra_user_ids` if you have linked accounts or multiple Renpho profiles on the same scale.
+- 🔒 **Secure Cloud Auth**: Connects directly via encrypted requests to the Renpho Cloud API.
 
-This repository contains multiple files, here is a overview:
+---
 
-File | Purpose | Documentation
--- | -- | --
-`.devcontainer.json` | Used for development/testing with Visual Studio Code. | [Documentation](https://code.visualstudio.com/docs/remote/containers)
-`.github/renovate.json` | Dependency update configuration for Renovate (enabled by default). | [Documentation](https://docs.renovatebot.com/configuration-options/)
-`.github/_dependabot.yml` | Dependency update configuration for Dependabot (disabled, see "Dependency updates" below). | [Documentation](https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file)
-`.github/ISSUE_TEMPLATE/*.yml` | Templates for the issue tracker | [Documentation](https://help.github.com/en/github/building-a-strong-community/configuring-issue-templates-for-your-repository)
-`custom_components/integration_blueprint/*` | Integration files, this is where everything happens. | [Documentation](https://developers.home-assistant.io/docs/creating_component_index)
-`CONTRIBUTING.md` | Guidelines on how to contribute. | [Documentation](https://help.github.com/en/github/building-a-strong-community/setting-guidelines-for-repository-contributors)
-`LICENSE` | The license file for the project. | [Documentation](https://help.github.com/en/github/creating-cloning-and-archiving-repositories/licensing-a-repository)
-`README.md` | The file you are reading now, should contain info about the integration, installation and configuration instructions. | [Documentation](https://help.github.com/en/github/writing-on-github/basic-writing-and-formatting-syntax)
-`requirements_dev.txt` | Python packages used for development/testing this integration (also installs lint tooling via `requirements_lint.txt`). | [Documentation](https://pip.pypa.io/en/stable/user_guide/#requirements-files)
-`requirements_lint.txt` | Python packages used to lint this integration (installed by the Lint CI job). | [Documentation](https://pip.pypa.io/en/stable/user_guide/#requirements-files)
-`requirements_common.txt` | Python packages common to CI and local dev, installed first so any pip upgrade completes before other dependencies (e.g. a modern pip). | [Documentation](https://pip.pypa.io/en/stable/user_guide/#requirements-files)
+## Installation
 
-## Dependency updates
+### Method 1: HACS (Recommended)
 
-This template ships with configuration for **two** dependency update tools. Pick
-**one** and remove or disable the other:
+1. Open **HACS** in your Home Assistant instance.
+2. Go to **Integrations** > click the three dots in the top right > **Custom repositories**.
+3. Add `https://github.com/jollyjoyce1995/home-assistant-renpho` with category **Integration**.
+4. Click **Download**, then restart Home Assistant.
 
-- **Renovate** (`.github/renovate.json`) is enabled by default.
-- **Dependabot** (`.github/_dependabot.yml`) is included but disabled — the `_`
-  prefix means GitHub ignores it. To use Dependabot instead, rename the file
-  back to `.github/dependabot.yml` and delete `.github/renovate.json`.
+### Method 2: Manual Installation
 
-## How?
+1. Download the latest release `.zip` or clone this repository.
+2. Copy the `custom_components/renpho` folder into your Home Assistant `<config>/custom_components/` directory.
+3. Restart Home Assistant.
 
-1. Create a new repository in GitHub, using this repository as a template by clicking the "Use this template" button in the GitHub UI.
-1. Open your new repository in Visual Studio Code devcontainer (Preferably with the "`Dev Containers: Clone Repository in Named Container Volume...`" option).
-1. Rename all instances of the `integration_blueprint` to `custom_components/<your_integration_domain>` (e.g. `custom_components/awesome_integration`).
-1. Rename all instances of the `Integration Blueprint` to `<Your Integration Name>` (e.g. `Awesome Integration`).
-1. Run the `scripts/develop` to start HA and test out your new integration.
+---
 
-## Next steps
+## Configuration
 
-These are some next steps you may want to look into:
-- Add tests to your integration, [`pytest-homeassistant-custom-component`](https://github.com/MatthewFlamm/pytest-homeassistant-custom-component) can help you get started.
-- Add brand images (logo/icon).
-- Create your first release.
-- Share your integration on the [Home Assistant Forum](https://community.home-assistant.io/).
-- Submit your integration to [HACS](https://hacs.xyz/docs/publish/start).
+1. In Home Assistant, go to **Settings** > **Devices & Services**.
+2. Click **Add Integration** and search for **Renpho**.
+3. Enter your **Email** and **Password** (the same credentials used in the Renpho mobile app).
+4. Optionally adjust the **Refresh interval** (default: 60 minutes).
+5. Click **Submit**.
+
+### Options & Reconfiguration
+
+Click **Configure** on the Renpho integration card to:
+- Adjust the polling interval (from 5 to 1440 minutes).
+- Specify extra user IDs for multi-profile scale tracking.
+
+---
+
+## Entities Provided
+
+| Entity | Type | Unit | Description |
+|---|---|---|---|
+| `sensor.renpho_weight` | Sensor | `kg` / `lbs` | Current weight |
+| `sensor.renpho_bmi` | Sensor | - | Body Mass Index |
+| `sensor.renpho_body_fat` | Sensor | `%` | Body Fat Percentage |
+| `sensor.renpho_body_water` | Sensor | `%` | Body Water Percentage |
+| `sensor.renpho_muscle_mass` | Sensor | `%` | Skeletal / Muscle Mass |
+| `sensor.renpho_bone_mass` | Sensor | `%` | Bone Mass Percentage |
+| `sensor.renpho_basal_metabolic_rate` | Sensor | `kcal` | BMR |
+| `sensor.renpho_visceral_fat` | Sensor | - | Visceral Fat Level |
+| `sensor.renpho_subcutaneous_fat` | Sensor | `%` | Subcutaneous Fat |
+| `sensor.renpho_protein` | Sensor | `%` | Protein Percentage |
+| `sensor.renpho_body_age` | Sensor | `years` | Metabolic Body Age |
+| `sensor.renpho_lean_body_mass` | Sensor | `kg` / `lbs` | Lean Body Mass |
+| `sensor.renpho_fat_free_weight` | Sensor | `kg` / `lbs` | Fat Free Weight |
+| `sensor.renpho_heart_rate` | Sensor | `bpm` | Heart Rate (if supported) |
+| `sensor.renpho_cardiac_index` | Sensor | - | Cardiac Index (if supported) |
+| `sensor.renpho_last_measurement` | Sensor | `timestamp` | Time of latest measurement |
+| `button.renpho_refresh` | Button | - | Trigger immediate measurement poll |
+
+---
+
+## Automation Example
+
+Notify your phone when a new weight measurement is recorded:
+
+```yaml
+alias: "Renpho: Weight Measurement Recorded"
+trigger:
+  - platform: state
+    entity_id: sensor.renpho_weight
+condition:
+  - condition: template
+    value_template: "{{ trigger.from_state.state != trigger.to_state.state }}"
+action:
+  - action: notify.mobile_app_my_phone
+    data:
+      title: "New Weight Recorded"
+      message: "Weight: {{ states('sensor.renpho_weight') }} {{ state_attr('sensor.renpho_weight', 'unit_of_measurement') }} (Body Fat: {{ states('sensor.renpho_body_fat') }}%)"
+```
+
+---
+
+## License
+
+MIT License. See [LICENSE](LICENSE) for details.

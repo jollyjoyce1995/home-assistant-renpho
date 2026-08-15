@@ -1,0 +1,16 @@
+{
+  "domain": "renpho",
+  "name": "Renpho",
+  "codeowners": [
+    "@jollyjoyce1995"
+  ],
+  "config_flow": true,
+  "documentation": "https://github.com/jollyjoyce1995/home-assistant-renpho",
+  "integration_type": "hub",
+  "iot_class": "cloud_polling",
+  "issue_tracker": "https://github.com/jollyjoyce1995/home-assistant-renpho/issues",
+  "requirements": [
+    "renpho-api>=0.2.0"
+  ],
+  "version": "0.1.0"
+}
