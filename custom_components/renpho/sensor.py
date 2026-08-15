@@ -41,7 +41,7 @@ def _parse_timestamp(ts: Any) -> datetime | None:
         if ts_int > EPOCH_MS_THRESHOLD:
             ts_int //= MILLISECONDS_IN_SECOND
         return datetime.fromtimestamp(ts_int, tz=UTC)
-    except (ValueError, TypeError, OSError):
+    except ValueError, TypeError, OSError:
         return None
 
 
@@ -54,7 +54,7 @@ def _get_metric_float(key: str) -> Callable[[dict[str, Any]], float | None]:
             return None
         try:
             return float(val)
-        except (ValueError, TypeError):
+        except ValueError, TypeError:
             return None
 
     return _fn
@@ -69,7 +69,7 @@ def _get_metric_int(key: str) -> Callable[[dict[str, Any]], int | None]:
             return None
         try:
             return int(float(val))
-        except (ValueError, TypeError):
+        except ValueError, TypeError:
             return None
 
     return _fn
