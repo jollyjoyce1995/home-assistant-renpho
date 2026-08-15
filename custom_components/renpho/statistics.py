@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING, Any
 from homeassistant.components.recorder.models import (
     StatisticData,
     StatisticMetaData,
-)1
+)
 from homeassistant.components.recorder.statistics import (
     async_import_statistics,
 )
