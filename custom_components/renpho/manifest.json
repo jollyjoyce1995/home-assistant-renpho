@@ -1,6 +1,9 @@
 {
   "domain": "renpho",
   "name": "Renpho",
+  "after_dependencies": [
+    "recorder"
+  ],
   "codeowners": [
     "@jollyjoyce1995"
   ],
@@ -9,9 +12,6 @@
   "integration_type": "hub",
   "iot_class": "cloud_polling",
   "issue_tracker": "https://github.com/jollyjoyce1995/home-assistant-renpho/issues",
-  "after_dependencies": [
-    "recorder"
-  ],
   "requirements": [
     "renpho-api>=0.2.0"
   ],
