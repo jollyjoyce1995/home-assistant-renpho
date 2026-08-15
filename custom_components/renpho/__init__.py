@@ -12,6 +12,7 @@ from renpho import RenphoClient
 from .const import LOGGER
 from .coordinator import RenphoDataUpdateCoordinator
 from .data import RenphoData
+from .services import async_setup_services, async_unload_services
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
@@ -52,6 +53,12 @@ async def async_setup_entry(
     # Forward setup to platforms
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
 
+    # Register services
+    await async_setup_services(hass)
+
+    # Queue background initial history import
+    hass.async_create_task(coordinator.async_import_history())
+
     # Register reload listener when options are updated
     entry.async_on_unload(entry.add_update_listener(async_reload_entry))
 
@@ -64,7 +71,10 @@ async def async_unload_entry(
     entry: RenphoConfigEntry,
 ) -> bool:
     """Handle removal of an entry."""
-    return await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
+    unload_ok = await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
+    if unload_ok:
+        await async_unload_services(hass)
+    return unload_ok
 
 
 async def async_reload_entry(

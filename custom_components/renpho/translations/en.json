@@ -86,6 +86,21 @@
     "button": {
       "refresh": {
         "name": "Refresh"
+      },
+      "import_history": {
+        "name": "Import historical data"
+      }
+    }
+  },
+  "services": {
+    "import_history": {
+      "name": "Import historical data",
+      "description": "Fetches complete historical measurement data from the Renpho cloud and imports it into Home Assistant Long-Term Statistics.",
+      "fields": {
+        "entry_id": {
+          "name": "Config entry ID",
+          "description": "Optional ID of the specific Renpho config entry to import history for."
+        }
       }
     }
   }

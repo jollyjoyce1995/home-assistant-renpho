@@ -2,14 +2,18 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .const import ATTRIBUTION, DOMAIN
-from .coordinator import RenphoDataUpdateCoordinator
+
+if TYPE_CHECKING:
+    from .coordinator import RenphoDataUpdateCoordinator
 
 
-class RenphoEntity(CoordinatorEntity[RenphoDataUpdateCoordinator]):
+class RenphoEntity(CoordinatorEntity["RenphoDataUpdateCoordinator"]):
     """Base entity for Renpho."""
 
     _attr_has_entity_name = True

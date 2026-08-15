@@ -5,7 +5,7 @@
 
 A custom Home Assistant integration for **Renpho smart scales**, powered by the [`renpho-api`](https://github.com/danvaneijck/renpho-api) library.
 
-Integrate your Renpho weight and body composition metrics directly into Home Assistant with automatic periodic polling and instant manual refresh.
+Integrate your Renpho weight and body composition metrics directly into Home Assistant with automatic periodic polling, instant manual refresh, and **full historical data import** into Home Assistant's Long-Term Statistics database.
 
 ---
 
@@ -27,6 +27,7 @@ Integrate your Renpho weight and body composition metrics directly into Home Ass
   - **Fat-Free Weight**
   - **Heart Rate** & **Cardiac Index** (for supported scale models)
   - **Last Measurement Timestamp**
+- 📊 **Complete Historical Data Import**: Automatically imports your entire past weigh-in history into Home Assistant's Long-Term Statistics database upon setup, with a dedicated **Import Historical Data** button (`button.renpho_*_import_history`) and `renpho.import_history` service to re-sync anytime.
 - 🔄 **Manual Refresh Button**: Trigger an immediate data poll with a dedicated button entity (`button.renpho_*_refresh`).
 - ⚙️ **Configurable Polling Interval**: Configure the refresh rate (in minutes) during setup or adjust it anytime in the integration's Options dialog.
 - 👥 **Multi-Account Support**: Add `extra_user_ids` if you have linked accounts or multiple Renpho profiles on the same scale.
@@ -59,6 +60,8 @@ Integrate your Renpho weight and body composition metrics directly into Home Ass
 4. Optionally adjust the **Refresh interval** (default: 60 minutes).
 5. Click **Submit**.
 
+Upon setup, your historical measurements are automatically imported in the background into Home Assistant's Long-Term Statistics database.
+
 ### Options & Reconfiguration
 
 Click **Configure** on the Renpho integration card to:
@@ -88,10 +91,41 @@ Click **Configure** on the Renpho integration card to:
 | `sensor.renpho_cardiac_index` | Sensor | - | Cardiac Index (if supported) |
 | `sensor.renpho_last_measurement` | Sensor | `timestamp` | Time of latest measurement |
 | `button.renpho_refresh` | Button | - | Trigger immediate measurement poll |
+| `button.renpho_import_history` | Button | - | Import complete account history into Long-Term Statistics |
 
 ---
 
-## Automation Example
+## Long-Term Statistics Dashboard Card Example
+
+You can graph your full historical data using Home Assistant's native **Statistics Graph Card**:
+
+```yaml
+type: statistics-graph
+title: Weight & Body Fat History
+entities:
+  - sensor.renpho_weight
+  - sensor.renpho_body_fat
+stat_types:
+  - mean
+  - min
+  - max
+days_to_show: 365
+chart_type: line
+```
+
+---
+
+## Services
+
+### `renpho.import_history`
+Fetches complete historical measurement data from the Renpho cloud and backfills it into Home Assistant Long-Term Statistics.
+
+**Parameters**:
+- `entry_id` *(optional)*: Specify a config entry ID. If omitted, imports history for all configured Renpho accounts.
+
+---
+
+## Automations Example
 
 Notify your phone when a new weight measurement is recorded:
 

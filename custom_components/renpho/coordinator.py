@@ -18,6 +18,7 @@ from .const import (
     DOMAIN,
     LOGGER,
 )
+from .statistics import async_import_renpho_history
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
@@ -122,3 +123,14 @@ class RenphoDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             LOGGER.exception("Unexpected error fetching Renpho data")
             error_msg = f"Unexpected error: {exception}"
             raise UpdateFailed(error_msg) from exception
+
+    async def async_import_history(self) -> int:
+        """Fetch full history and import into Long-Term Statistics."""
+        LOGGER.info("Starting historical data import for Renpho integration")
+        data = await self._async_update_data()
+        measurements = data.get("measurements", [])
+        imported_count = await async_import_renpho_history(
+            self.hass, self, measurements
+        )
+        self.async_set_updated_data(data)
+        return imported_count

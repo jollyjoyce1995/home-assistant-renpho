@@ -8,7 +8,7 @@ import pytest
 
 from custom_components.renpho.button import (
     BUTTON_DESCRIPTIONS,
-    RenphoRefreshButton,
+    RenphoButton,
     async_setup_entry,
 )
 from tests.conftest import MOCK_MEASUREMENT, MOCK_USER_INFO
@@ -39,7 +39,7 @@ async def test_button_setup():
 
 
 @pytest.mark.asyncio
-async def test_button_press():
+async def test_button_press_refresh():
     """Test pressing the manual refresh button."""
     coordinator = MagicMock()
     coordinator.data = {
@@ -51,8 +51,28 @@ async def test_button_press():
     coordinator.client.user_id = "987654321"
     coordinator.async_request_refresh = AsyncMock()
 
-    refresh_desc = BUTTON_DESCRIPTIONS[0]
-    button = RenphoRefreshButton(coordinator, refresh_desc)
+    refresh_desc = next(d for d in BUTTON_DESCRIPTIONS if d.key == "refresh")
+    button = RenphoButton(coordinator, refresh_desc)
 
     await button.async_press()
     coordinator.async_request_refresh.assert_awaited_once()
+
+
+@pytest.mark.asyncio
+async def test_button_press_import_history():
+    """Test pressing the import history button."""
+    coordinator = MagicMock()
+    coordinator.data = {
+        "latest_measurement": MOCK_MEASUREMENT,
+        "user_info": MOCK_USER_INFO,
+    }
+    coordinator.config_entry.entry_id = "test_entry"
+    coordinator.config_entry.unique_id = "987654321"
+    coordinator.client.user_id = "987654321"
+    coordinator.async_import_history = AsyncMock()
+
+    history_desc = next(d for d in BUTTON_DESCRIPTIONS if d.key == "import_history")
+    button = RenphoButton(coordinator, history_desc)
+
+    await button.async_press()
+    coordinator.async_import_history.assert_awaited_once()

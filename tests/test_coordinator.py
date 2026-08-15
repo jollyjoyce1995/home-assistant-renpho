@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from unittest.mock import MagicMock
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 import requests
@@ -113,3 +113,33 @@ async def test_coordinator_async_update_network_failure(mock_renpho_client):
 
     with pytest.raises(UpdateFailed):
         await coordinator._async_update_data()
+
+
+@pytest.mark.asyncio
+async def test_coordinator_async_import_history(mock_renpho_client):
+    """Test coordinator async_import_history method."""
+    hass = MagicMock()
+    entry = MagicMock()
+    entry.entry_id = "test_entry_id"
+    entry.options = {}
+    entry.data = {}
+
+    coordinator = RenphoDataUpdateCoordinator(
+        hass=hass,
+        config_entry=entry,
+        client=mock_renpho_client,
+    )
+
+    async def mock_async_add_executor_job(func, *args):
+        return func(*args)
+
+    hass.async_add_executor_job = mock_async_add_executor_job
+
+    with patch(
+        "custom_components.renpho.coordinator.async_import_renpho_history",
+        new_callable=AsyncMock,
+        return_value=10,
+    ) as mock_import:
+        count = await coordinator.async_import_history()
+        assert count == 10
+        mock_import.assert_awaited_once()

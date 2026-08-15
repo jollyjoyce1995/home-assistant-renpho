@@ -28,6 +28,12 @@ if "homeassistant" not in sys.modules:
     ha_helpers_device_registry = types.ModuleType(
         "homeassistant.helpers.device_registry"
     )
+    ha_helpers_entity_registry = types.ModuleType(
+        "homeassistant.helpers.entity_registry"
+    )
+    ha_helpers_config_validation = types.ModuleType(
+        "homeassistant.helpers.config_validation"
+    )
     ha_helpers_update_coordinator = types.ModuleType(
         "homeassistant.helpers.update_coordinator"
     )
@@ -38,6 +44,13 @@ if "homeassistant" not in sys.modules:
     ha_components = types.ModuleType("homeassistant.components")
     ha_components_sensor = types.ModuleType("homeassistant.components.sensor")
     ha_components_button = types.ModuleType("homeassistant.components.button")
+    ha_components_recorder = types.ModuleType("homeassistant.components.recorder")
+    ha_components_recorder_models = types.ModuleType(
+        "homeassistant.components.recorder.models"
+    )
+    ha_components_recorder_statistics = types.ModuleType(
+        "homeassistant.components.recorder.statistics"
+    )
 
     # const
     ha_const.CONF_EMAIL = "email"
@@ -75,8 +88,15 @@ if "homeassistant" not in sys.modules:
     def callback(fn):
         return fn
 
+    class ServiceCall:
+        def __init__(self, domain: str, service: str, data: dict | None = None):
+            self.domain = domain
+            self.service = service
+            self.data = data or {}
+
     ha_core.callback = callback
     ha_core.HomeAssistant = MagicMock
+    ha_core.ServiceCall = ServiceCall
 
     # exceptions
     class HomeAssistantError(Exception):
@@ -161,6 +181,17 @@ if "homeassistant" not in sys.modules:
 
     ha_helpers_device_registry.DeviceInfo = DeviceInfo
 
+    class EntityRegistry:
+        def async_get_entity_id(self, domain, platform, unique_id):
+            return f"{domain}.renpho_{unique_id.split('_')[-1]}"
+
+    ha_helpers_entity_registry.async_get = MagicMock(return_value=EntityRegistry())
+
+    def cv_string(val):
+        return str(val)
+
+    ha_helpers_config_validation.string = cv_string
+
     class UpdateFailed(HomeAssistantError):
         pass
 
@@ -179,6 +210,9 @@ if "homeassistant" not in sys.modules:
 
         async def async_request_refresh(self):
             pass
+
+        def async_set_updated_data(self, data):
+            self.data = data
 
     class CoordinatorEntity(Generic[_T]):
         def __init__(self, coordinator):
@@ -237,6 +271,8 @@ if "homeassistant" not in sys.modules:
 
     ha_helpers.selector = ha_helpers_selector
     ha_helpers.device_registry = ha_helpers_device_registry
+    ha_helpers.entity_registry = ha_helpers_entity_registry
+    ha_helpers.config_validation = ha_helpers_config_validation
     ha_helpers.update_coordinator = ha_helpers_update_coordinator
     ha_helpers.entity_platform = ha_helpers_entity_platform
 
@@ -277,6 +313,7 @@ if "homeassistant" not in sys.modules:
         translation_key: str | None = None
         device_class: ButtonDeviceClass | None = None
         icon: str | None = None
+        entity_category: EntityCategory | None = None
 
     class ButtonEntity:
         entity_description: ButtonEntityDescription
@@ -285,8 +322,37 @@ if "homeassistant" not in sys.modules:
     ha_components_button.ButtonEntityDescription = ButtonEntityDescription
     ha_components_button.ButtonEntity = ButtonEntity
 
+    # recorder
+    @dataclass
+    class StatisticMetaData:
+        has_mean: bool
+        has_sum: bool
+        name: str
+        source: str
+        statistic_id: str
+        unit_of_measurement: str | None = None
+
+    @dataclass
+    class StatisticData:
+        start: Any
+        state: float
+        mean: float
+        min: float
+        max: float
+
+    mock_async_import_statistics = MagicMock()
+    ha_components_recorder_models.StatisticData = StatisticData
+    ha_components_recorder_models.StatisticMetaData = StatisticMetaData
+    ha_components_recorder_statistics.async_import_statistics = (
+        mock_async_import_statistics
+    )
+
+    ha_components_recorder.models = ha_components_recorder_models
+    ha_components_recorder.statistics = ha_components_recorder_statistics
+
     ha_components.sensor = ha_components_sensor
     ha_components.button = ha_components_button
+    ha_components.recorder = ha_components_recorder
 
     ha.const = ha_const
     ha.core = ha_core
@@ -304,6 +370,10 @@ if "homeassistant" not in sys.modules:
     sys.modules["homeassistant.config_entries"] = ha_config_entries
     sys.modules["homeassistant.helpers"] = ha_helpers
     sys.modules["homeassistant.helpers.device_registry"] = ha_helpers_device_registry
+    sys.modules["homeassistant.helpers.entity_registry"] = ha_helpers_entity_registry
+    sys.modules["homeassistant.helpers.config_validation"] = (
+        ha_helpers_config_validation
+    )
     sys.modules["homeassistant.helpers.update_coordinator"] = (
         ha_helpers_update_coordinator
     )
@@ -312,6 +382,13 @@ if "homeassistant" not in sys.modules:
     sys.modules["homeassistant.components"] = ha_components
     sys.modules["homeassistant.components.sensor"] = ha_components_sensor
     sys.modules["homeassistant.components.button"] = ha_components_button
+    sys.modules["homeassistant.components.recorder"] = ha_components_recorder
+    sys.modules["homeassistant.components.recorder.models"] = (
+        ha_components_recorder_models
+    )
+    sys.modules["homeassistant.components.recorder.statistics"] = (
+        ha_components_recorder_statistics
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -342,6 +419,30 @@ MOCK_MEASUREMENT = {
     "cardiacIndex": 2.8,
 }
 
+MOCK_MEASUREMENT_2 = {
+    "id": "12346",
+    "timeStamp": 1700086400,
+    "time_stamp": 1700086400,
+    "localCreatedAt": "2023-11-15 22:13:20",
+    "scaleName": "ES-26M-W",
+    "userId": "987654321",
+    "weight": 72.1,
+    "bmi": 22.2,
+    "bodyfat": 18.3,
+    "water": 58.4,
+    "muscle": 45.3,
+    "bone": 3.2,
+    "bmr": 1648,
+    "visfat": 6,
+    "subfat": 14.0,
+    "protein": 19.2,
+    "bodyage": 28,
+    "sinew": 58.9,
+    "fatFreeWeight": 58.9,
+    "heartRate": 66,
+    "cardiacIndex": 2.7,
+}
+
 MOCK_USER_INFO = {
     "id": "987654321",
     "email": "test@example.com",
@@ -370,7 +471,7 @@ def mock_renpho_client():
     client.user_id = "987654321"
     client.user_info = MOCK_USER_INFO
     client.login.return_value = {"login": MOCK_USER_INFO}
-    client.get_all_measurements.return_value = [MOCK_MEASUREMENT]
+    client.get_all_measurements.return_value = [MOCK_MEASUREMENT, MOCK_MEASUREMENT_2]
     client.get_device_info.return_value = MOCK_DEVICE_INFO
     client.get_girth_measurements.return_value = []
     return client
