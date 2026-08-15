@@ -93,7 +93,11 @@ async def async_import_renpho_history(
         for m in sorted_measurements:
             raw_ts = m.get("timeStamp") or m.get("time_stamp")
             start_time = _parse_utc_timestamp(raw_ts)
-            if not start_time or start_time in seen_timestamps:
+            if not start_time:
+                continue
+            # Truncate timestamp to the top of the hour as required by Home Assistant statistics
+            start_time_hour = start_time.replace(minute=0, second=0, microsecond=0)
+            if start_time_hour in seen_timestamps:
                 continue
 
             value = description.value_fn(m)
@@ -105,10 +109,10 @@ async def async_import_renpho_history(
             except (ValueError, TypeError):
                 continue
 
-            seen_timestamps.add(start_time)
+            seen_timestamps.add(start_time_hour)
             stat_data_list.append(
                 StatisticData(
-                    start=start_time,
+                    start=start_time_hour,
                     state=float_val,
                     mean=float_val,
                     min=float_val,
