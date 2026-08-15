@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING, Any
 from homeassistant.components.recorder.models import (
     StatisticData,
     StatisticMetaData,
-)
+)1
 from homeassistant.components.recorder.statistics import (
     async_import_statistics,
 )
@@ -95,7 +95,8 @@ async def async_import_renpho_history(
             start_time = _parse_utc_timestamp(raw_ts)
             if not start_time:
                 continue
-            # Truncate timestamp to the top of the hour as required by Home Assistant statistics
+            # Truncate timestamp to the top of the hour as required by
+            # Home Assistant statistics
             start_time_hour = start_time.replace(minute=0, second=0, microsecond=0)
             if start_time_hour in seen_timestamps:
                 continue
