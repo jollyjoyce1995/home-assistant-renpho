@@ -10,6 +10,7 @@ from homeassistant.components.recorder.models import (
     StatisticMetaData,
 )
 from homeassistant.components.recorder.statistics import (
+    StatisticMeanType,
     async_import_statistics,
 )
 from homeassistant.helpers import entity_registry as er
@@ -81,6 +82,7 @@ async def async_import_renpho_history(
         metadata = StatisticMetaData(
             has_mean=True,
             has_sum=False,
+            mean_type=StatisticMeanType.ARITHMETIC,
             name=f"Renpho {description.key.replace('_', ' ').title()}",
             source=stat_source,
             statistic_id=stat_id,
